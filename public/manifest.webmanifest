@@ -1,0 +1,18 @@
+{
+  "name": "NOVA AI - Personal Voice Assistant",
+  "short_name": "NOVA AI",
+  "description": "Real-time voice-controlled personal AI assistant and web automation platform",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#05070d",
+  "theme_color": "#090d16",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

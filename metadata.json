@@ -1,0 +1,6 @@
+{
+  "name": "NOVA AI - Voice-Controlled Personal AI Assistant",
+  "description": "Real-time voice-to-voice personal AI assistant and web automation platform with local-first privacy, wake-word activation, web search, image generation, and productivity tools.",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

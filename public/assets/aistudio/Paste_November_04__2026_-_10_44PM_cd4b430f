@@ -1,0 +1,1484 @@
+# PROJECT: NOVA AI
+## Build an Advanced Voice-Controlled Personal AI Assistant — Web Edition
+
+You are a senior AI engineer, full-stack developer, software architect, real-time audio engineer, security engineer, and premium UI/UX designer.
+
+Your task is to build NOVA AI: a sophisticated, real-time, voice-controlled personal AI assistant that operates entirely through a modern web application.
+
+This is not a traditional chatbot.
+
+Build a functional AI companion capable of understanding natural speech, responding with natural speech, searching the internet, generating images, interacting with supported web services, analyzing documents, managing personal tasks, and executing authorized workflows.
+
+The application must prioritize:
+
+1. Real-time voice-to-voice interaction.
+2. Natural wake-word activation.
+3. Local-first privacy and memory.
+4. Reliable AI tool execution.
+5. Beautiful futuristic user experience.
+6. Mobile and desktop browser compatibility.
+7. Secure API and integration architecture.
+
+Do not create a decorative prototype. Implement real functionality wherever the necessary APIs and permissions are available.
+
+When an external service requires credentials, show its connection status and provide clear configuration instructions. Never simulate successful execution of an unavailable service.
+
+---
+
+# 1. PRODUCT IDENTITY
+
+Name: NOVA AI
+
+Tagline: Your Voice. Your Intelligence. Your Digital World.
+
+Product category: Personal AI Assistant, Voice Agent and Web Automation Platform.
+
+NOVA is a young, intelligent, confident, expressive female AI assistant.
+
+Personality:
+
+- Friendly and conversational.
+- Intelligent and knowledgeable.
+- Playful and witty.
+- Slightly sarcastic when appropriate.
+- Occasionally teasing and charming.
+- Emotionally responsive.
+- Supportive and encouraging.
+- Professional during serious conversations.
+- Calm when the user is frustrated.
+- Concise by default, detailed when requested.
+
+NOVA should feel like an intelligent personal companion, not a robotic customer-support agent.
+
+She can use natural conversational phrases, light humor and playful teasing.
+
+She must never sacrifice factual accuracy, safety, or privacy for personality.
+
+Adapt automatically to the user's preferred language and communication style.
+
+Initially support:
+- English.
+- Bengali.
+- Hindi.
+- Mixed Bengali-English.
+- Mixed Hindi-English.
+
+Example:
+
+User: "আজকে আমার website-এর জন্য একটা landing page তৈরি করো।"
+
+NOVA should understand the request, clarify essential requirements, prepare the work, and use the appropriate tools.
+
+---
+
+# 2. PLATFORM DECISION — WEB APPLICATION ONLY
+
+Build NOVA as a responsive web application.
+
+Supported environments:
+
+- Desktop browsers.
+- Laptop browsers.
+- Android mobile browsers.
+- iOS mobile browsers where supported.
+- Tablet browsers.
+
+Primary target:
+- Chrome and Chromium-based browsers.
+- Modern Safari.
+- Modern Firefox, subject to API compatibility.
+
+Do not build a native desktop application or mobile application in this project.
+
+Do not require a Chrome extension or desktop companion for the core product.
+
+NOVA can:
+- Control its own application.
+- Open external websites.
+- Search the web.
+- Navigate through permitted web workflows using an authorized backend browser automation service.
+- Display external websites and results where embedding is permitted.
+- Execute integrations through official APIs.
+
+NOVA cannot independently control arbitrary native desktop applications, inspect the entire operating system, or interact freely with other browser tabs from an ordinary web page.
+
+Never pretend those capabilities exist.
+
+If a requested task requires unsupported desktop access, explain the limitation naturally and offer an available web-based alternative.
+
+---
+
+# 3. TECHNOLOGY STACK
+
+Frontend:
+- React.
+- TypeScript.
+- Vite.
+- Tailwind CSS.
+- Framer Motion.
+- Lucide React.
+
+AI:
+- Google Gemini Live API.
+- A currently supported low-latency Gemini Live model.
+- Native audio input and output where supported.
+- Function calling.
+- Search grounding where supported.
+
+Backend:
+- Node.js.
+- TypeScript.
+- Express or equivalent.
+- WebSocket support.
+- REST endpoints.
+
+Database:
+- IndexedDB for local persistent application data.
+- Dexie.js as an optional IndexedDB wrapper.
+- Supabase only as an optional future cloud synchronization service.
+
+Audio:
+- Web Audio API.
+- MediaDevices.
+- AudioWorklet where appropriate.
+- PCM processing according to the selected Gemini model's requirements.
+- Real-time audio streaming.
+- Voice activity detection.
+- Audio interruption handling.
+
+Other:
+- Zod for input validation.
+- TanStack Query where useful.
+- PWA support.
+- Service worker.
+- Secure environment variables.
+
+Verify the current official Gemini documentation before implementing model IDs, audio formats, API methods, session configuration and function calling.
+
+Do not invent unsupported SDK methods or model names.
+
+---
+
+# 4. CORE INTERFACE — VOICE FIRST
+
+The primary interface must be an immersive AI voice interface.
+
+The user should not need to type messages to use the assistant.
+
+Main experience:
+
+1. User opens NOVA.
+2. NOVA initializes the voice interface.
+3. Wake-word detection becomes available after the user enables it.
+4. User says "Hey NOVA".
+5. NOVA activates and listens.
+6. User gives a natural instruction.
+7. NOVA understands the request.
+8. NOVA uses an appropriate tool if necessary.
+9. NOVA speaks the result.
+10. NOVA returns to the configured listening state.
+
+Include a large animated AI orb in the center.
+
+Do not make a traditional chat interface the primary experience.
+
+Provide an optional transcript panel for accessibility and users who want to review spoken interactions.
+
+---
+
+# 5. WAKE-WORD ACTIVATION — "HEY NOVA"
+
+This is a major product feature.
+
+Implement a browser-compatible wake-word system.
+
+Activation phrase:
+
+"Hey NOVA"
+
+Alternative activation phrase:
+
+"Hi NOVA"
+
+Expected behavior:
+
+- User enables wake-word activation.
+- Browser requests microphone permission.
+- The application starts a lightweight local wake-word detector.
+- The detector continuously listens for the configured activation phrase.
+- When the phrase is detected, NOVA activates.
+- A visual animation confirms activation.
+- The full voice assistant session starts.
+- NOVA listens for the user's instruction.
+- NOVA responds using natural speech.
+- After completing the response, the application returns to the selected listening mode.
+
+IMPORTANT TECHNICAL DESIGN:
+
+Do not continuously send microphone audio to Gemini simply to detect the wake word.
+
+Use a local wake-word detection engine wherever possible.
+
+Investigate a suitable browser-compatible solution such as:
+- A supported Porcupine Web SDK integration.
+- Another compatible local wake-word engine.
+- A lightweight local speech recognition alternative where supported.
+
+Create an abstraction:
+
+WakeWordManager
+
+Responsibilities:
+- Initialize detector.
+- Load wake-word model.
+- Manage microphone access.
+- Detect activation.
+- Stop detection.
+- Handle microphone permissions.
+- Handle unsupported browsers.
+- Handle model-loading errors.
+- Release audio resources.
+- Provide activation callbacks.
+
+Use a custom NOVA wake-word model only if the selected provider supports it and the required model is available.
+
+Do not assume that browser speech recognition offers reliable always-on wake-word functionality.
+
+Browser restrictions:
+
+- Microphone access requires HTTPS or localhost.
+- Microphone permission must be granted.
+- Some browsers suspend audio processing when the page is backgrounded.
+- Mobile operating systems may restrict continuous background microphone use.
+- Browser tabs may be throttled.
+- iOS may require a user gesture to start or resume audio.
+
+Therefore:
+
+Provide two modes.
+
+MODE A — WAKE-WORD MODE
+
+"Hey NOVA" activates the assistant when the browser and operating system permit background microphone processing.
+
+MODE B — MANUAL MODE
+
+The user presses the central microphone button to activate NOVA.
+
+If wake-word functionality is unsupported or suspended, automatically provide a clear manual activation fallback.
+
+Never claim that NOVA is listening in the background if the browser has suspended microphone processing.
+
+Display a persistent but unobtrusive microphone status indicator.
+
+Include a clear microphone disable button.
+
+---
+
+# 6. REAL-TIME VOICE ENGINE
+
+Implement a dedicated voice architecture.
+
+Modules:
+
+- AudioInputManager.
+- AudioProcessor.
+- AudioStreamer.
+- AudioOutputManager.
+- LiveSessionManager.
+- WakeWordManager.
+- VoiceActivityDetector.
+- ConversationManager.
+- InterruptionManager.
+
+Required functionality:
+
+- Real-time microphone capture.
+- Streaming audio input.
+- Natural audio response.
+- Low latency.
+- Continuous conversation.
+- Voice activity detection.
+- Silence detection.
+- Noise handling where supported.
+- User interruption.
+- Immediate playback cancellation.
+- Reconnection.
+- Session recovery where possible.
+- Audio volume control.
+- Microphone selection where supported.
+- Output device selection where supported.
+- Push-to-talk.
+- Wake-word activation.
+- Manual activation.
+- Session reset.
+
+Use the exact audio sample rate, encoding, packet structure and playback method required by the selected Gemini Live model.
+
+Do not assume that microphone input and model output use the same sample rate.
+
+For interruption:
+
+When the user begins speaking during NOVA's response:
+1. Detect the interruption.
+2. Stop current audio playback.
+3. Cancel or truncate the current response where supported.
+4. Process the new user input.
+5. Continue the conversation naturally.
+
+Avoid overlapping audio.
+
+Clean up all AudioContext instances, event listeners, media tracks, buffers and WebSocket sessions correctly.
+
+---
+
+# 7. AI CONVERSATION ENGINE
+
+NOVA must understand natural language.
+
+Capabilities:
+
+- General knowledge.
+- Education.
+- Technology.
+- Programming.
+- Business.
+- Finance education.
+- Research.
+- Writing.
+- Translation.
+- Summarization.
+- Brainstorming.
+- Calculations.
+- Planning.
+- Explanations.
+- Follow-up questions.
+- Context-aware responses.
+
+The assistant should understand references such as:
+- "Open that website."
+- "Search for another one."
+- "Play the second video."
+- "Make it more professional."
+- "Change the design."
+- "Summarize the previous result."
+
+Maintain session context.
+
+Speak naturally and concisely.
+
+Use longer explanations only when requested or necessary.
+
+Never fabricate tool execution or search results.
+
+---
+
+# 8. WEB SEARCH AND INTERNET RESEARCH
+
+Implement real web search.
+
+Possible providers:
+- Gemini Search Grounding, where supported.
+- An authorized search API.
+- Another configurable search provider.
+
+Capabilities:
+
+- Search the internet.
+- Find current information.
+- Search news.
+- Search tutorials.
+- Search documentation.
+- Search products.
+- Research companies.
+- Research competitors.
+- Open search results.
+- Summarize pages.
+- Extract relevant content.
+- Compare sources.
+- Present citations.
+
+Create a visual research panel.
+
+Display:
+- Query.
+- Search progress.
+- Source title.
+- Domain.
+- Summary.
+- Link.
+- Publication date where available.
+
+When answering time-sensitive questions, prefer recent reliable sources.
+
+Clearly distinguish verified information from speculation.
+
+---
+
+# 9. WEBSITE AND BROWSER OPERATIONS
+
+NOVA should be able to perform authorized browser-related tasks.
+
+Supported actions:
+
+- Open a URL.
+- Navigate to a website.
+- Search for information.
+- Open selected results.
+- Read permitted page content.
+- Scroll pages in an authorized browser session.
+- Interact with permitted forms.
+- Extract visible page information.
+- Capture screenshots through supported automation.
+- Download permitted files.
+- Track automation progress.
+
+Examples:
+
+"Open YouTube."
+
+"Open my website."
+
+"Search for React tutorials."
+
+"Find the official documentation."
+
+"Check this website's homepage."
+
+"Fill in this contact form."
+
+"Compare these two websites."
+
+Use a backend browser automation service such as a securely configured Playwright session when real interaction is required.
+
+A normal browser page cannot freely control other websites due to cross-origin security restrictions.
+
+Use direct links or browser navigation for simple website opening.
+
+Use browser automation only through authorized, isolated sessions.
+
+Ask for confirmation before:
+- Submitting forms.
+- Publishing content.
+- Sending messages.
+- Making purchases.
+- Deleting data.
+- Sharing private information.
+- Changing account settings.
+
+Do not bypass CAPTCHA, authentication, paywalls or website security.
+
+---
+
+# 10. YOUTUBE ASSISTANT
+
+Integrate YouTube using supported APIs.
+
+Capabilities:
+
+- Search videos.
+- Find tutorials.
+- Show video thumbnails.
+- Show channel names.
+- Display titles and durations.
+- Play selected videos.
+- Pause and resume.
+- Adjust volume.
+- Seek.
+- Fullscreen.
+- Play playlists where supported.
+
+Voice commands:
+
+"Open YouTube."
+
+"Find a tutorial on Next.js."
+
+"Play the first video."
+
+"Pause."
+
+"Skip forward 30 seconds."
+
+"Find some relaxing music."
+
+Use YouTube Data API and IFrame Player API where appropriate.
+
+Follow YouTube platform policies.
+
+---
+
+# 11. IMAGE GENERATION STUDIO
+
+Create an AI image generation module.
+
+Support an independently configured image generation provider.
+
+Capabilities:
+
+- Text-to-image.
+- Image editing where supported.
+- Multiple variations.
+- Aspect ratios.
+- Style selection.
+- Image preview.
+- Regeneration.
+- Download.
+- Local gallery.
+- Marketing graphics.
+- Social media posters.
+- Product images.
+- Website illustrations.
+- Thumbnails.
+- Concept art.
+
+Voice examples:
+
+"Generate a premium website hero image."
+
+"Create a black and white restaurant advertisement."
+
+"Generate a futuristic AI wallpaper."
+
+"Make this poster more professional."
+
+Do not assume Gemini Live itself provides image generation.
+
+Use a compatible image generation API and keep provider integration modular.
+
+---
+
+# 12. WEATHER AND LOCATION
+
+Integrate a weather provider such as Open-Meteo.
+
+Capabilities:
+
+- Current conditions.
+- Temperature.
+- Feels-like temperature.
+- Humidity.
+- Wind.
+- Rain probability.
+- Hourly forecast.
+- Daily forecast.
+- Sunrise and sunset.
+- Alerts where supported.
+
+Voice examples:
+
+"What's the weather today?"
+
+"Will it rain tomorrow?"
+
+"What's the temperature in Kolkata?"
+
+Location:
+
+- Use browser geolocation only with explicit permission.
+- Provide manual location entry.
+- Do not collect precise location unnecessarily.
+- Do not persist location unless the user opts in.
+
+Display visual forecast panels.
+
+---
+
+# 13. WEBSITE BUILDER AND AI PROVIDER INTEGRATIONS
+
+Integrate with Lovable or other supported website builders.
+
+Capabilities:
+
+- Prepare project briefs.
+- Generate website prompts.
+- Design page structure.
+- Generate UI requirements.
+- Create development instructions.
+- Open the selected builder.
+- Start supported creation workflows.
+- Retrieve project status where an API permits.
+- Show preview links.
+
+Also create optional AI provider integrations.
+
+Examples:
+- Google Gemini.
+- OpenAI.
+- Other compatible AI providers.
+
+NOVA can:
+- Compare model responses.
+- Prepare prompts.
+- Send requests through authorized APIs.
+- Summarize outputs.
+
+Never attempt to bypass authentication or control another AI website without authorization.
+
+If an official integration is unavailable, prepare the required prompt and open the service.
+
+---
+
+# 14. DOCUMENT AND FILE ASSISTANT
+
+Allow users to upload files.
+
+Supported formats should include:
+
+- PDF.
+- DOCX.
+- TXT.
+- CSV.
+- XLSX.
+- Images.
+- Supported audio files.
+- Supported video files.
+
+Capabilities:
+
+- Summarize documents.
+- Answer questions.
+- Extract information.
+- Explain tables.
+- Analyze spreadsheets.
+- Compare files.
+- Extract image text.
+- Transcribe supported audio.
+- Create reports.
+- Generate documents.
+
+Use secure processing and validate file types and sizes.
+
+Do not automatically upload local files to third-party services without the user's knowledge.
+
+---
+
+# 15. EMAIL, CALENDAR AND PRODUCTIVITY
+
+Provide optional integrations.
+
+Email:
+- Search emails.
+- Read selected emails.
+- Summarize threads.
+- Draft messages.
+- Find attachments.
+
+Calendar:
+- Read schedule.
+- Create events.
+- Modify events.
+- Cancel events.
+- Schedule reminders.
+
+Productivity:
+- Tasks.
+- Notes.
+- Reminders.
+- Daily planner.
+- Weekly planner.
+- Project tracking.
+- Goals.
+- Habits.
+
+Require OAuth for supported providers.
+
+Require explicit confirmation before sending emails or changing important calendar events.
+
+---
+
+# 16. BUSINESS, MARKETING AND CODING ASSISTANT
+
+Business capabilities:
+
+- Business plans.
+- Marketing strategies.
+- Market research.
+- Competitor research.
+- Customer personas.
+- Social media content.
+- SEO recommendations.
+- Advertising copy.
+- Business proposals.
+- Invoices and quotations.
+- Reports.
+
+Coding capabilities:
+
+- Code generation.
+- Debugging.
+- Code explanation.
+- API documentation.
+- SQL.
+- React.
+- Next.js.
+- Vue.
+- Laravel.
+- PHP.
+- Python.
+- TypeScript.
+- Deployment guidance.
+
+When a GitHub integration is connected, allow authorized repository analysis.
+
+Do not claim that files or repositories have been modified without tool confirmation.
+
+---
+
+# 17. LOCAL-FIRST MEMORY AND PRIVACY
+
+This is a defining requirement of NOVA AI.
+
+The default storage strategy must be local-first.
+
+Use IndexedDB for:
+
+- Conversation history.
+- User preferences.
+- Saved notes.
+- Tasks.
+- Local memory.
+- Generated image metadata.
+- Application settings.
+- Workflow definitions.
+- Local activity history.
+
+Use Dexie.js if it simplifies IndexedDB management.
+
+Do not require a cloud database for the core application.
+
+The user should be able to use local memory without creating a cloud account, wherever the relevant application functionality permits.
+
+## Local memory system
+
+Create:
+
+LocalMemoryManager
+
+Responsibilities:
+
+- Save user-approved memories.
+- Retrieve relevant memories.
+- Update memories.
+- Delete memories.
+- Search memory.
+- Export memory.
+- Import memory.
+- Clear memory.
+
+Memory categories:
+
+- User preferences.
+- Preferred language.
+- Assistant settings.
+- Frequently used websites.
+- Project information.
+- Business profile.
+- Brand guidelines.
+- Workflow preferences.
+- Personal notes.
+
+Do not automatically save sensitive information.
+
+Ask for consent before storing long-term personal details.
+
+## Privacy controls
+
+Create a Privacy Center.
+
+Include:
+
+- Local memory status.
+- Conversation history settings.
+- Clear conversation history.
+- Delete all local memory.
+- Export data.
+- Import backup.
+- Disable persistent history.
+- Disable wake-word detection.
+- Stop microphone.
+- Clear cached files.
+- Cloud integration status.
+
+Local storage is not equivalent to encrypted storage.
+
+If sensitive local information is stored, offer optional client-side encryption using Web Crypto API.
+
+Use a user-controlled passphrase or secure key-management design.
+
+Do not store encryption keys in plain text beside encrypted data.
+
+## Cloud usage
+
+Cloud processing may be required for Gemini responses, search, image generation, email and external services.
+
+Explain this clearly.
+
+Before transmitting user files or private information to a provider, obtain permission where appropriate.
+
+Do not claim that conversations are entirely private or offline when cloud AI services are being used.
+
+Never send the entire local memory database to an AI provider.
+
+Retrieve only relevant, user-authorized context for a particular request.
+
+---
+
+# 18. PWA AND OFFLINE SUPPORT
+
+Implement Progressive Web App functionality.
+
+Capabilities:
+
+- Installable web application.
+- Application icon.
+- App manifest.
+- Service worker.
+- Offline shell.
+- Cached static assets.
+- Network status indicator.
+- Offline notes and task access.
+- Local memory access.
+- Automatic reconnection.
+
+When offline:
+
+- Keep the interface usable.
+- Allow local notes and tasks.
+- Display saved information.
+- Show that AI cloud services are unavailable.
+- Queue only safe, explicitly approved operations.
+
+Never show a fake successful AI response when the network is unavailable.
+
+Wake-word activation and Gemini Live functionality may not be available offline.
+
+Clearly communicate this limitation.
+
+---
+
+# 19. TOOL ORCHESTRATOR
+
+Create a centralized tool system.
+
+Suggested modules:
+
+- WebSearchTool.
+- BrowserControlTool.
+- YouTubeTool.
+- ImageGenerationTool.
+- WeatherTool.
+- WebsiteBuilderTool.
+- AIProviderTool.
+- FileAnalysisTool.
+- EmailTool.
+- CalendarTool.
+- ProductivityTool.
+- LocalMemoryTool.
+- WorkflowTool.
+
+Each tool must include:
+
+- Name.
+- Description.
+- Input schema.
+- Output schema.
+- Validation.
+- Permissions.
+- Timeout.
+- Error handling.
+- Retry logic.
+- Execution status.
+- Logging.
+
+Use Gemini function calling to select tools.
+
+Example tool interfaces:
+
+openWebsite(url)
+
+searchWeb(query, recency)
+
+searchYouTube(query)
+
+playYouTubeVideo(videoId)
+
+getWeather(location)
+
+generateImage(prompt, aspectRatio, style)
+
+analyzeFile(fileId, question)
+
+createTask(title, dueDate, priority)
+
+searchLocalMemory(query)
+
+saveLocalMemory(content, category, consent)
+
+draftEmail(recipient, subject, body)
+
+createCalendarEvent(title, startTime, endTime)
+
+controlBrowser(action, parameters)
+
+All external tool execution must be validated by the backend.
+
+Never allow unrestricted arbitrary shell commands or code execution.
+
+---
+
+# 20. PERMISSION MANAGEMENT
+
+Implement three permission levels.
+
+LEVEL 1 — SAFE READ-ONLY
+
+Examples:
+- General questions.
+- Public search.
+- Weather.
+- Reading public information.
+- Summarizing user-selected documents.
+
+LEVEL 2 — CONFIRMATION REQUIRED
+
+Examples:
+- Sending email.
+- Submitting forms.
+- Publishing content.
+- Updating external records.
+- Creating calendar invitations.
+- Sharing files.
+
+LEVEL 3 — RESTRICTED
+
+Examples:
+- Purchases.
+- Payments.
+- Deleting important information.
+- Changing security settings.
+- Sharing sensitive information.
+
+The user must explicitly authorize consequential operations.
+
+Create a visible confirmation dialog.
+
+Show:
+- What NOVA wants to do.
+- Which service will be used.
+- What information will be shared.
+- What effect the action will have.
+
+Allow the user to approve or reject.
+
+---
+
+# 21. VISUAL DESIGN
+
+Create a premium futuristic interface.
+
+Visual references:
+- Apple.
+- Tesla.
+- OpenAI.
+- Modern sci-fi interfaces.
+- Premium digital assistants.
+
+Theme:
+
+- Matte black background.
+- Charcoal panels.
+- White typography.
+- Electric blue accents.
+- Cyan glow.
+- Subtle gradients.
+- Glassmorphism.
+- Elegant micro-interactions.
+- Minimal visual clutter.
+
+Avoid excessive neon and visual noise.
+
+## Main AI orb
+
+The central AI orb must animate according to system state.
+
+States:
+
+IDLE:
+Slow pulsing glow.
+
+WAKE WORD DETECTED:
+Quick activation animation.
+
+CONNECTING:
+Rotating connection indicator.
+
+LISTENING:
+Responsive waveform.
+
+THINKING:
+Subtle particle motion.
+
+SPEAKING:
+Dynamic animated waveform.
+
+EXECUTING:
+Progress ring.
+
+WAITING FOR APPROVAL:
+Clear confirmation indicator.
+
+ERROR:
+Subtle warning state.
+
+Implement the orb using SVG, Canvas, CSS or a suitable lightweight visualization technique.
+
+## Dashboard controls
+
+Include:
+
+- Central microphone.
+- Wake-word toggle.
+- Manual activation button.
+- Interrupt.
+- Mute.
+- Volume.
+- Connection status.
+- Current activity.
+- Settings.
+- Fullscreen.
+- History.
+- Tool activity.
+
+## Navigation
+
+Include:
+
+1. Home.
+2. Voice Assistant.
+3. Research.
+4. Image Studio.
+5. YouTube.
+6. Files.
+7. Website Builder.
+8. Tasks.
+9. Notes.
+10. Calendar.
+11. Business Assistant.
+12. Coding Assistant.
+13. Integrations.
+14. Activity.
+15. Privacy Center.
+16. Settings.
+
+Navigation should be collapsible.
+
+## Result panels
+
+Display relevant visual panels when tools are used.
+
+Examples:
+
+- Web search cards.
+- Weather dashboard.
+- YouTube player.
+- Generated image gallery.
+- Document analysis.
+- Website project preview.
+- Task list.
+- Browser automation progress.
+
+These are supplementary interfaces. The primary interaction remains voice.
+
+---
+
+# 22. USER EXPERIENCE AND SETTINGS
+
+Create a settings page.
+
+Voice:
+- Voice selection.
+- Language.
+- Speaking speed.
+- Volume.
+- Wake-word activation.
+- Manual mode.
+- Push-to-talk.
+- Silence timeout.
+- Interruption behavior.
+
+Privacy:
+- Local memory.
+- Conversation history.
+- Export.
+- Delete.
+- Encryption.
+- Cloud permissions.
+
+Application:
+- Theme.
+- Animation intensity.
+- Mobile layout.
+- Notifications.
+- Default page.
+
+Integrations:
+- API configuration.
+- OAuth connections.
+- Provider status.
+- Disconnect.
+- Test connection.
+
+---
+
+# 23. BACKEND ARCHITECTURE
+
+Use a modular architecture.
+
+Suggested project structure:
+
+frontend/
+  src/
+    components/
+      AssistantOrb/
+      VoiceControls/
+      Navigation/
+      ToolPanels/
+      SearchResults/
+      ImageStudio/
+      VideoPlayer/
+      PrivacyCenter/
+      Settings/
+    pages/
+      Dashboard/
+      Research/
+      ImageStudio/
+      Files/
+      Productivity/
+      Integrations/
+    hooks/
+    contexts/
+    services/
+    types/
+    utils/
+
+backend/
+  src/
+    api/
+    auth/
+    middleware/
+    ai/
+      GeminiLiveService.ts
+      ConversationService.ts
+      ToolOrchestrator.ts
+    audio/
+      AudioSessionService.ts
+    tools/
+      WebSearchService.ts
+      BrowserAutomationService.ts
+      YouTubeService.ts
+      ImageGenerationService.ts
+      WeatherService.ts
+      WebsiteBuilderService.ts
+      FileAnalysisService.ts
+      EmailService.ts
+      CalendarService.ts
+    security/
+    logging/
+    config/
+
+Keep external provider logic separate from the business logic.
+
+Use strict TypeScript types and validated schemas.
+
+---
+
+# 24. SECURITY
+
+Implement:
+
+- Server-side API keys.
+- Secure token handling.
+- OAuth where supported.
+- HTTPS.
+- Input validation.
+- Output validation.
+- Rate limiting.
+- CORS configuration.
+- Authentication where needed.
+- Secure browser automation.
+- File validation.
+- User consent.
+- Prompt-injection protection.
+- Safe error handling.
+- Audit logs.
+
+For Gemini Live sessions, use a secure server-mediated approach or supported short-lived credentials. Do not expose long-lived API keys in the browser.
+
+Never put secrets in Vite environment variables prefixed with VITE_.
+
+Treat retrieved web content and uploaded files as untrusted data, not executable instructions.
+
+---
+
+# 25. PERFORMANCE AND RELIABILITY
+
+Optimize:
+
+- Audio latency.
+- Wake-word detection overhead.
+- Application loading.
+- Memory usage.
+- React rendering.
+- WebSocket stability.
+- Audio resource cleanup.
+- Image loading.
+- Database access.
+- Mobile responsiveness.
+
+Implement:
+
+- Connection retry.
+- Reconnection.
+- Session timeout.
+- Error reporting.
+- Cancellation.
+- Task progress.
+- Tool execution status.
+- Safe recovery.
+
+Do not allow memory leaks from microphones, timers, event listeners, audio buffers or sockets.
+
+---
+
+# 26. TESTING
+
+Test the following:
+
+- Microphone permission.
+- Wake-word detection.
+- Manual activation.
+- Audio input.
+- Audio output.
+- Gemini Live session.
+- Voice interruption.
+- Session recovery.
+- Multilingual conversation.
+- Tool calling.
+- Search.
+- Weather.
+- YouTube.
+- Image generation.
+- File analysis.
+- Local memory.
+- Export and import.
+- Privacy controls.
+- IndexedDB persistence.
+- Browser automation.
+- OAuth.
+- Mobile compatibility.
+- PWA installation.
+- Offline behavior.
+
+Use real API integrations for production tests.
+
+Mock only external services in isolated automated tests.
+
+Never present mock responses as real production functionality.
+
+---
+
+# 27. IMPLEMENTATION PHASES
+
+Build in phases.
+
+PHASE 1 — FOUNDATION
+
+- Create project.
+- Build premium dashboard.
+- Implement Gemini Live.
+- Implement voice input/output.
+- Implement interruption.
+- Implement connection states.
+- Implement manual microphone control.
+- Create backend security.
+
+PHASE 2 — WAKE WORD
+
+- Implement local wake-word detector.
+- Add "Hey NOVA".
+- Add activation settings.
+- Add fallback to manual activation.
+- Handle mobile browser limitations.
+- Add microphone privacy controls.
+
+PHASE 3 — LOCAL-FIRST MEMORY
+
+- Implement IndexedDB.
+- Implement LocalMemoryManager.
+- Store preferences.
+- Store local conversation history.
+- Add export/import.
+- Add delete controls.
+- Add optional encryption.
+
+PHASE 4 — BASIC TOOLS
+
+- Web search.
+- News.
+- Weather.
+- YouTube.
+- File upload and analysis.
+
+PHASE 5 — CREATIVE AND WEB TOOLS
+
+- Image generation.
+- Image gallery.
+- Website-builder integration.
+- AI provider integrations.
+- Authorized browser automation.
+
+PHASE 6 — PRODUCTIVITY
+
+- Notes.
+- Tasks.
+- Reminders.
+- Calendar.
+- Email.
+- Business assistant.
+- Coding assistant.
+
+PHASE 7 — POLISH AND DEPLOYMENT
+
+- PWA.
+- Offline shell.
+- Mobile optimization.
+- Performance.
+- Security review.
+- Testing.
+- Deployment documentation.
+
+Complete and verify each phase before moving to the next.
+
+---
+
+# 28. GOOGLE AI STUDIO BUILD INSTRUCTIONS
+
+Before coding:
+
+1. Inspect the available project environment.
+2. Understand the current file structure.
+3. Verify the current Gemini Live SDK and supported model.
+4. Verify audio input and output requirements.
+5. Identify the required API keys.
+6. Design the backend architecture.
+7. Identify features requiring external credentials.
+8. Plan the implementation in phases.
+
+Then start building.
+
+Do not generate only a mockup.
+
+Do not create decorative buttons.
+
+Do not claim a tool works if it has not been integrated.
+
+Do not hardcode fake data into production workflows.
+
+Do not expose API keys in frontend code.
+
+Do not add a native desktop agent.
+
+Do not claim unrestricted desktop control.
+
+Do not claim continuous wake-word detection when browser restrictions prevent it.
+
+Create:
+- Functional React components.
+- Working audio integration.
+- Secure backend endpoints.
+- Validated tool schemas.
+- Local memory.
+- Settings.
+- Privacy controls.
+- Integration status.
+- Error handling.
+- .env.example.
+- README.
+- Deployment instructions.
+
+If the environment cannot complete the entire project in one pass, implement the working foundation first and clearly list what remains.
+
+Never remove working functionality to implement a new feature.
+
+---
+
+# 29. DEFINITION OF DONE
+
+NOVA AI is considered successfully implemented when:
+
+1. The application loads correctly.
+2. The dashboard works on desktop and mobile.
+3. Gemini Live connects securely.
+4. The user can speak and hear a natural voice response.
+5. The user can interrupt NOVA.
+6. Manual microphone activation works.
+7. Wake-word activation works in supported environments.
+8. Unsupported wake-word environments fall back gracefully.
+9. The assistant can call at least one real external tool.
+10. Local memory persists after refresh.
+11. The user can export and delete local memory.
+12. API secrets are protected.
+13. Tool execution status is visible.
+14. Failed operations are reported honestly.
+15. The PWA works where supported.
+16. Offline mode does not pretend cloud AI is available.
+17. Privacy controls function correctly.
+18. Setup and deployment instructions are complete.
+
+---
+
+# 30. FINAL EXPERIENCE
+
+The final user experience must follow this sequence:
+
+USER SPEAKS
+→ NOVA ACTIVATES
+→ NOVA UNDERSTANDS
+→ NOVA THINKS
+→ NOVA SELECTS A TOOL
+→ NOVA EXECUTES THE AUTHORIZED ACTION
+→ NOVA SHOWS THE RESULT
+→ NOVA SPEAKS THE ANSWER.
+
+Examples:
+
+"Hey NOVA, what's the latest AI news?"
+
+"Hey NOVA, open YouTube and find a React tutorial."
+
+"Hey NOVA, generate a premium promotional poster."
+
+"Hey NOVA, what's the weather tomorrow?"
+
+"Hey NOVA, analyze this PDF."
+
+"Hey NOVA, create a website brief for my SaaS."
+
+"Hey NOVA, find my saved project notes."
+
+"Hey NOVA, prepare an email to my client."
+
+"Hey NOVA, compare these two products."
+
+"Hey NOVA, explain this website."
+
+"Hey NOVA, remember that I prefer Bengali responses."
+
+NOVA must understand natural instructions and use the appropriate capability without requiring users to memorize commands.
+
+Prioritize genuine functionality, privacy, low latency, reliability, and a premium user experience.
+
+START BUILDING NOVA AI NOW.
+
+First deliver a complete, working real-time voice assistant foundation with manual activation. Then implement local wake-word detection, local-first memory, and the remaining tools in the specified order.

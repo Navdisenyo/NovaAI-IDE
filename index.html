@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NOVA AI - Voice-Controlled Personal AI Assistant</title>
+    <meta name="description" content="Real-time voice-to-voice personal AI assistant and web automation platform with local-first privacy, wake-word activation, web search, image generation, and productivity tools." />
+    <meta property="og:title" content="NOVA AI - Voice-Controlled Personal AI Assistant" />
+    <meta property="og:description" content="Real-time voice-to-voice personal AI assistant and web automation platform with local-first privacy, wake-word activation, web search, image generation, and productivity tools." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#090d16" />
+    <script>
+      // Compatibility shim for extensions (e.g. Urban VPN, proxy interceptors) that reassign window.fetch
+      (function() {
+        try {
+          var originalFetch = window.fetch;
+          var boundFetch = typeof originalFetch === 'function' ? originalFetch.bind(window) : originalFetch;
+          var currentFetch = boundFetch;
+
+          Object.defineProperty(window, 'fetch', {
+            get: function() {
+              return currentFetch;
+            },
+            set: function(newFetch) {
+              currentFetch = newFetch;
+            },
+            configurable: true,
+            enumerable: true,
+          });
+
+          if (typeof Window !== 'undefined' && Window.prototype) {
+            try {
+              var protoDesc = Object.getOwnPropertyDescriptor(Window.prototype, 'fetch');
+              if (protoDesc && !protoDesc.set && protoDesc.configurable) {
+                Object.defineProperty(Window.prototype, 'fetch', {
+                  get: protoDesc.get || function() { return currentFetch; },
+                  set: function(val) { currentFetch = val; },
+                  configurable: true,
+                  enumerable: protoDesc.enumerable !== undefined ? protoDesc.enumerable : true,
+                });
+              }
+            } catch (_) {}
+          }
+        } catch (_) {}
+
+        // Isolate and suppress external extension injection errors
+        try {
+          window.addEventListener('error', function(event) {
+            var source = event.filename || (event.error && event.error.stack) || '';
+            var msg = event.message || '';
+            if (
+              source.indexOf('chrome-extension://') !== -1 ||
+              source.indexOf('moz-extension://') !== -1 ||
+              source.indexOf('extension://') !== -1 ||
+              msg.indexOf('Cannot set property fetch') !== -1
+            ) {
+              if (event.preventDefault) event.preventDefault();
+              if (event.stopImmediatePropagation) event.stopImmediatePropagation();
+              return true;
+            }
+          }, true);
+
+          window.addEventListener('unhandledrejection', function(event) {
+            var reason = event.reason ? (event.reason.stack || event.reason.message || String(event.reason)) : '';
+            if (
+              reason.indexOf('chrome-extension://') !== -1 ||
+              reason.indexOf('moz-extension://') !== -1 ||
+              reason.indexOf('Cannot set property fetch') !== -1
+            ) {
+              if (event.preventDefault) event.preventDefault();
+              if (event.stopImmediatePropagation) event.stopImmediatePropagation();
+            }
+          });
+        } catch (_) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+
